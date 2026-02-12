@@ -24,8 +24,9 @@ async function lazyLoadingScroller(page) {
     let lastCount = 0;
     let scrollAttempts = 0;
     let stableRounds = 0;
+    const maxScrolls = 50;
 
-    while (scrollAttempts < 50) {
+    while (scrollAttempts < maxScrolls) {
         await page.mouse.wheel(0, 1000);
         await page.waitForTimeout(1500 + Math.random() * 800);
 
@@ -81,7 +82,7 @@ function exportToCSV(products, filename='lidlProducts.csv') {
 }
 
 
-async function fetchProducts() {
+async function main() {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
@@ -104,4 +105,4 @@ async function fetchProducts() {
     }
 }
 
-fetchProducts();
+main();
