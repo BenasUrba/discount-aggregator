@@ -4,14 +4,14 @@ const fs = require('fs');
 async function getProducts(page) {
     return await page.$$eval('[data-controller="offerCard"]', nodes => 
         nodes.map(node => ({
+            store: "Maxima",
             title: node.querySelector('.mt-4')?.innerText.trim() || '',
+            validUntil: node.querySelector('.text-small span')?.innerText.trim() || '',
             image: node.querySelector('.offer-image img')?.src || '',
-            description: node.querySelector('.row .col-12')?.innerText.trim() || '',
-            limitedTime: node.querySelector('.text-small span')?.innerText.trim() || '',
-            discountPercentage: (() => {
-                const discount = node.querySelector('.discount')?.innerText.trim() || '';
-                const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
-                return discount && percentage ? `${discount}${percentage}` : discount;
+            price: (() => {
+                const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
+                const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
+                return whole && cents ? `${whole}.${cents}` : whole;
             })(),
             oldPrice: (() => {
                 const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
@@ -19,13 +19,16 @@ async function getProducts(page) {
                 const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
                 return whole && cents ? `${whole}.${cents}` : crossedPrice;
             })(),
-            price: (() => {
-                const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
-                const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}` : whole;
-            })(),
-            aciuDeal: !!node.querySelector('.icon-wrapper img')?.src,
+            loyaltyRequired: !!node.querySelector('.icon-wrapper img')?.src,
             storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
+            description: node.querySelector('.row .col-12')?.innerText.trim() || '',
+            discountInfo: (() => {
+                const discount = node.querySelector('.discount')?.innerText.trim() || '';
+                const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
+                return discount && percentage ? `${discount}${percentage}` : discount;
+            })(),
+            productBrand: null,
+            discountDescription: null
         }))
     );
 }

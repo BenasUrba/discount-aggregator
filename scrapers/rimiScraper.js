@@ -33,26 +33,40 @@ async function paginationLoader(page) {
 
 async function getProducts(page) {
     return await page.$$eval('.product-grid__item', nodes =>
-        nodes.map(node => ({
-            title: node.querySelector('.card__name')?.innerText.trim() || '',
-            image: node.querySelector('.card__image-wrapper img')?.src || '',
-            price: (() => {
-                const whole = node.querySelector('.price-tag.card__price span')?.innerText.trim() || '';
-                const cents = node.querySelector('.price-tag.card__price sup')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}`: whole;
-            })(),
-            units: node.querySelector('.price-tag.card__price sub')?.innerText.trim() || '',
-            oldPrice: node.querySelector('.old-price-tag.card__old-price')?.innerText.trim() || '',
-            description: node.querySelector('.card__price-per')?.innerText.trim() || '',
-            rimiDeal: !!node.querySelector('.price-label img')?.src,
-            discountPrice: (() => {
-                const whole = node.querySelector('.price-label__price .major')?.innerText.trim() || '';
-                const cents = node.querySelector('.price-label__price .minor .cents')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}`: whole;
-            })(),
-            discountDescription: node.querySelector('.price-per-unit')?.innerText.trim() || '',
-            discountInfo: node.querySelector('.price-label__header span')?.innerText.trim() || '',
-        }))
+        nodes.map(node => {
+            const baseWhole = node.querySelector('.price-tag.card__price span')?.innerText.trim() || '';
+            const baseCents = node.querySelector('.price-tag.card__price sup')?.innerText.trim() || '';
+            const basePrice = baseWhole && baseCents ? `${baseWhole}.${baseCents}` : baseWhole;
+
+            const oldPriceRaw = node.querySelector('.old-price-tag.card__old-price')?.innerText.trim() || '';
+
+            const discountWhole = node.querySelector('.price-label__price .major')?.innerText.trim() || '';
+            const discountCents = node.querySelector('.price-label__price .minor .cents')?.innerText.trim() || '';
+            const discountPrice = discountWhole && discountCents ? `${discountWhole}.${discountCents}` : discountWhole;
+
+            let price, oldPrice;
+            if (discountPrice) {
+                price = discountPrice;
+                oldPrice = basePrice;
+            } else {
+                price = basePrice;
+                oldPrice = oldPriceRaw;
+            }
+
+            return {
+                store: "Rimi",
+                title: node.querySelector('.card__name')?.innerText.trim() || '',
+                validUntil: null,
+                image: node.querySelector('.card__image-wrapper img')?.src || '',
+                price,
+                oldPrice,
+                loyaltyRequired: !!node.querySelector('.price-label img')?.src,
+                storeSize: null,
+                description: node.querySelector('.card__price-per')?.innerText.trim() || '',
+                discountInfo: node.querySelector('.price-label__header span')?.innerText.trim() || '',
+                productBrand: null,
+                discountDescription: node.querySelector('.price-per-unit')?.innerText.trim() || ''
+        }})
     );
 }
 

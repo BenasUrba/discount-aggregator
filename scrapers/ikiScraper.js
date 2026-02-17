@@ -46,13 +46,10 @@ async function lazyLoadingScroller(page) {
 async function getProducts(page) {
     return await page.$$eval('.tag_class-savaites-akcijos', nodes =>
         nodes.map(node => ({
+            store: "IKI",
             title: node.querySelector('.akcija_title')?.innerText.trim() || '',
-            description: node.querySelector('.akcija_description')?.innerText.trim() || '',
+            validUntil: node.querySelector('.mt-3 > p')?.innerText.trim() || '',
             image: node.querySelector('.card-img-top')?.src || '',
-            productWrapper: Array.from(node.querySelectorAll('.price_block_red_wrapper span'))
-                                  .map(s => s.innerText.trim())
-                                  .filter(Boolean)
-                                  .join(''),
             price: (() => {
                 const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
                 const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
@@ -63,8 +60,15 @@ async function getProducts(page) {
                 const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
                 return whole && cents ? `${whole}.${cents}` : whole;
             })(),
-            limitedTime: node.querySelector('.mt-3 > p')?.innerText.trim() || '',
+            loyaltyRequired: !!node.querySelector('.card img')?.src,
             storeSize: node.querySelectorAll('.store-list-item__hearts img').length,
+            description: node.querySelector('.akcija_description')?.innerText.trim() || '',
+            discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span'))
+                                  .map(s => s.innerText.trim())
+                                  .filter(Boolean)
+                                  .join(''),
+            productBrand: null,
+            discountDescription: null
         }))
     );
 }
