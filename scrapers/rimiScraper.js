@@ -20,7 +20,7 @@ async function paginationLoader(page) {
         await page.goto(`https://www.rimi.lt/e-parduotuve/lt/akcijos?currentPage=${i}&pageSize=80`,
             {waitUntil: "domcontentloaded", timeout: 60000}
         );
-        await page.waitForSelector('.product-grid__item', { timeout: 20000});
+        await page.waitForSelector('.product-grid__item', { timeout: 40000});
 
         const products = await getProducts(page);
         allProducts.push(...products);
@@ -36,21 +36,22 @@ async function getProducts(page) {
         nodes.map(node => {
             const baseWhole = node.querySelector('.price-tag.card__price span')?.innerText.trim() || '';
             const baseCents = node.querySelector('.price-tag.card__price sup')?.innerText.trim() || '';
-            const basePrice = baseWhole && baseCents ? `${baseWhole}.${baseCents}` : baseWhole;
+            const basePrice = baseWhole && baseCents ? Number(`${baseWhole}.${baseCents}`) : (baseWhole ? Number(baseWhole) : null);
 
             const oldPriceRaw = node.querySelector('.old-price-tag.card__old-price')?.innerText.trim() || '';
+            const oldPriceParsed = oldPriceRaw ? Number(oldPriceRaw.replace(/[^\d,.-]/g, '').replace(',','.')) : null;
 
             const discountWhole = node.querySelector('.price-label__price .major')?.innerText.trim() || '';
             const discountCents = node.querySelector('.price-label__price .minor .cents')?.innerText.trim() || '';
-            const discountPrice = discountWhole && discountCents ? `${discountWhole}.${discountCents}` : discountWhole;
+            const discountPrice = discountWhole && discountCents ? Number(`${discountWhole}.${discountCents}`) : (discountWhole ? Number(discountWhole) : null);
 
             let price, oldPrice;
-            if (discountPrice) {
+            if (discountPrice !== null) {
                 price = discountPrice;
                 oldPrice = basePrice;
             } else {
                 price = basePrice;
-                oldPrice = oldPriceRaw;
+                oldPrice = oldPriceParsed;
             }
 
             return {
@@ -92,7 +93,7 @@ function exportToCSV(products, filename='rimiProducts.csv') {
 }
 
 async function main() {
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({ headless: false });
     const page = await browser.newPage();
 
     try {
@@ -101,7 +102,7 @@ async function main() {
         );
 
         const products = await paginationLoader(page);
-        await exportToCSV(products);
+        exportToCSV(products);
 
         console.log(`Product Count: ${products.length}`);
         return products;

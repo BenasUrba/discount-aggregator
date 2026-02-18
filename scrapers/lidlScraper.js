@@ -44,22 +44,31 @@ async function lazyLoadingScroller(page) {
     }
 }
 
-async function getProductInfo(page) {
+async function getProductInfo(page) {     
     return await page.$$eval('.product-grid-box', nodes =>
-        nodes.map(node => ({
-            store: "Lidl",
-            title: node.querySelector('.product-grid-box__title')?.innerText.trim() || '',
-            validUntil: node.querySelector('.ods-badge__label')?.innerText.trim() || '',
-            image: node.querySelector('.odsc-image-gallery__image')?.src || '',
-            price: node.querySelector('.ods-price__value')?.innerText.trim() || '',
-            oldPrice: node.querySelector('.ods-price__stroke-price s')?.innerText.trim() || '',
-            loyaltyRequired: !!node.querySelector('.ods-price__lidl-plus-icon'),
-            storeSize: null,
-            description: node.querySelector('.ods-price__footer')?.innerText.trim() || '',
-            discountInfo: node.querySelector('.ods-price__box-content-text-el')?.innerText.trim() || '',
-            productBrand: node.querySelector('.product-grid-box__brand')?.innerText.trim() || '',
-            discountDescription: null
-        }))
+        nodes.map(node => {
+            const parsePrice = (price) => {
+                if (!price) return null;
+                return Number(price.replace(/[^\d,.-]/g, '').replace(',','.'));
+            };
+
+            const rawPrice = node.querySelector('.ods-price__value')?.innerText.trim() || '';
+            const rawOldPrice = node.querySelector('.ods-price__stroke-price s')?.innerText.trim() || '';
+
+            return {
+                store: "Lidl",
+                title: node.querySelector('.product-grid-box__title')?.innerText.trim() || '',
+                validUntil: node.querySelector('.ods-badge__label')?.innerText.trim() || null,
+                image: node.querySelector('.odsc-image-gallery__image')?.src || '',
+                price: parsePrice(rawPrice),
+                oldPrice: parsePrice(rawOldPrice),
+                loyaltyRequired: !!node.querySelector('.ods-price__lidl-plus-icon'),
+                storeSize: null,
+                description: node.querySelector('.ods-price__footer')?.innerText.trim() || '',
+                discountInfo: node.querySelector('.ods-price__box-content-text-el')?.innerText.trim() || '',
+                productBrand: node.querySelector('.product-grid-box__brand')?.innerText.trim() || '',
+                discountDescription: null
+        }})
     );
 }
 
