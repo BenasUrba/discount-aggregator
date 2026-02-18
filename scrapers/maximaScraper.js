@@ -11,13 +11,13 @@ async function getProducts(page) {
             price: (() => {
                 const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
                 const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}` : whole;
+                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
             })(),
             oldPrice: (() => {
                 const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
                 const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
                 const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}` : crossedPrice;
+                return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
             })(),
             loyaltyRequired: !!node.querySelector('.icon-wrapper img')?.src,
             storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,

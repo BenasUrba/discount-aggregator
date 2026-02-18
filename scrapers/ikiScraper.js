@@ -53,17 +53,17 @@ async function getProducts(page) {
             price: (() => {
                 const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
                 const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}` : whole;
+                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
             })(),
             oldPrice: (() => {
                 const whole = node.querySelector('.price_old_block > .price_int')?.innerText.trim() || '';
                 const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
-                return whole && cents ? `${whole}.${cents}` : whole;
+                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
             })(),
             loyaltyRequired: !!node.querySelector('.card img')?.src,
             storeSize: node.querySelectorAll('.store-list-item__hearts img').length,
             description: node.querySelector('.akcija_description')?.innerText.trim() || '',
-            discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span'))
+            discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span, .price_block_rounded_red_wrapper span'))
                                   .map(s => s.innerText.trim())
                                   .filter(Boolean)
                                   .join(''),
