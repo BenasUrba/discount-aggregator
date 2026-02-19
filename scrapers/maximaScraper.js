@@ -3,33 +3,54 @@ const fs = require('fs');
 
 async function getProducts(page) {
     return await page.$$eval('[data-controller="offerCard"]', nodes => 
-        nodes.map(node => ({
-            store: "Maxima",
-            title: node.querySelector('.mt-4')?.innerText.trim() || '',
-            validUntil: node.querySelector('.text-small span')?.innerText.trim() || '',
-            image: node.querySelector('.offer-image img')?.src || '',
-            price: (() => {
-                const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
-                const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
-                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-            })(),
-            oldPrice: (() => {
-                const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
-                const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
-                const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
-                return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
-            })(),
-            loyaltyRequired: !!node.querySelector('.icon-wrapper img')?.src,
-            storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
-            description: node.querySelector('.row .col-12')?.innerText.trim() || '',
-            discountInfo: (() => {
-                const discount = node.querySelector('.discount')?.innerText.trim() || '';
-                const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
-                return discount && percentage ? `${discount}${percentage}` : discount;
-            })(),
-            productBrand: null,
-            discountDescription: null
-        }))
+        nodes.map(node => {
+            const rawDates = node.querySelector('.text-small span')?.innerText.trim() || '';
+            let validFrom = null;
+            let validUntil = null;
+
+            if (rawDates) {
+                const dateMatch = rawDates.match(/(?:Iki)?\s*(\d{2})\.(\d{2})/i);
+
+                if (dateMatch) {
+                    const [ , month, day] = dateMatch;
+                    const year = new Date().getFullYear();
+
+                    validFrom = null;
+                    validUntil = `${year}-${month}-${day}`;
+                } else {
+                    validFrom = null;
+                    validUntil = null;
+                }
+            }
+
+            return {
+                store: "Maxima",
+                title: node.querySelector('.mt-4')?.innerText.trim() || '',
+                validFrom,
+                validUntil,
+                image: node.querySelector('.offer-image img')?.src || '',
+                price: (() => {
+                    const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
+                    const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
+                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+                })(),
+                oldPrice: (() => {
+                    const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
+                    const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
+                    const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
+                    return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
+                })(),
+                loyaltyRequired: !!node.querySelector('.icon-wrapper img')?.src,
+                storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
+                description: node.querySelector('.row .col-12')?.innerText.trim() || '',
+                discountInfo: (() => {
+                    const discount = node.querySelector('.discount')?.innerText.trim() || '';
+                    const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
+                    return discount && percentage ? `${discount}${percentage}` : discount;
+                })(),
+                productBrand: null,
+                discountDescription: null
+        }})
     );
 }
 

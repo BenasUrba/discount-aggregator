@@ -57,6 +57,7 @@ async function getProducts(page) {
             return {
                 store: "Rimi",
                 title: node.querySelector('.card__name')?.innerText.trim() || '',
+                validFrom: null,
                 validUntil: null,
                 image: node.querySelector('.card__image-wrapper img')?.src || '',
                 price,
