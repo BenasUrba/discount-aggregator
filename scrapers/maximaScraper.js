@@ -1,5 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
+const { insertProducts } = require('../backend/db/products');
+const pool = require('../backend/db/index');
 
 async function getProducts(page) {
     return await page.$$eval('[data-controller="offerCard"]', nodes => 
@@ -75,6 +77,14 @@ function exportToCSV(products, filename='maximaProducts.csv') {
     console.log(`CSV saved as ${filename}`);
 }
 
+async function saveProducts(products, store) {
+    await pool.query('DELETE FROM products WHERE store = $1', [store])
+
+    for (const product of products) {
+        await insertProducts(product);
+    }
+}
+
 async function main() {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
@@ -88,6 +98,8 @@ async function main() {
         await page.waitForSelector('[data-controller="offerCard"]');
 
         const products = await getProducts(page);
+
+        await saveProducts(products, 'Maxima');
 
         exportToCSV(products);
 
