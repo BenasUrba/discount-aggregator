@@ -45,31 +45,76 @@ async function lazyLoadingScroller(page) {
 
 async function getProducts(page) {
     return await page.$$eval('.tag_class-savaites-akcijos', nodes =>
-        nodes.map(node => ({
-            store: "IKI",
-            title: node.querySelector('.akcija_title')?.innerText.trim() || '',
-            validUntil: node.querySelector('.mt-3 > p')?.innerText.trim() || '',
-            image: node.querySelector('.card-img-top')?.src || '',
-            price: (() => {
-                const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
-                const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
-                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-            })(),
-            oldPrice: (() => {
-                const whole = node.querySelector('.price_old_block > .price_int')?.innerText.trim() || '';
-                const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
-                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-            })(),
-            loyaltyRequired: !!node.querySelector('.card img')?.src,
-            storeSize: node.querySelectorAll('.store-list-item__hearts img').length,
-            description: node.querySelector('.akcija_description')?.innerText.trim() || '',
-            discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span, .price_block_rounded_red_wrapper span'))
-                                  .map(s => s.innerText.trim())
-                                  .filter(Boolean)
-                                  .join(''),
-            productBrand: null,
-            discountDescription: null
-        }))
+        nodes.map(node => {
+            const rawDates = node.querySelector('.mt-3 > p')?.innerText.trim() || '';
+            let validFrom = null;
+            let validUntil = null;
+
+            if (rawDates) {
+                const rangeMatch = rawDates.match(/(\d{2})\.(\d{2})\s*-\s*(\d{2})\.(\d{2})/);
+                if (rangeMatch) {
+                    const [ , startMonth, startDay, endMonth, endDay] = rangeMatch;
+                    const year = new Date().getFullYear();
+
+                    validFrom = `${year}-${startMonth}-${startDay}`;
+                    validUntil = `${year}-${endMonth}-${endDay}`;
+                } else {
+                    const exactDateMatch = rawDates.match(/(\d{4})\s*m\.\s*(\w+)\s*(\d{1,2})\s*d\./i);
+
+                    if (exactDateMatch) {
+                        const [ , year, monthLt, day] = exactDateMatch;
+
+                        const months = {
+                            sausio: '01',
+                            vasario: '02',
+                            kovo: '03',
+                            balandžio: '04',
+                            gegužės: '05',
+                            birželio: '06',
+                            liepos: '07',
+                            rugpjūčio: '08',
+                            rugsėjo: '09',
+                            spalio: '10',
+                            lapkričio: '11',
+                            gruodžio: '12'
+                        };
+
+                        const month = months[monthLt.toLowerCase()];
+
+                        if (month) {
+                            validFrom = `${year}-${month}-${day.padStart(2, '0')}`;
+                            validUntil = `${year}-${month}-${day.padStart(2, '0')}`;
+                        }
+                    }
+                }
+            }
+
+            return {
+                store: "IKI",
+                title: node.querySelector('.akcija_title')?.innerText.trim() || '',
+                validFrom,
+                validUntil,
+                image: node.querySelector('.card-img-top')?.src || '',
+                price: (() => {
+                    const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
+                    const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
+                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+                })(),
+                oldPrice: (() => {
+                    const whole = node.querySelector('.price_old_block > .price_int')?.innerText.trim() || '';
+                    const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
+                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+                })(),
+                loyaltyRequired: !!node.querySelector('.card img')?.src,
+                storeSize: node.querySelectorAll('.store-list-item__hearts img').length,
+                description: node.querySelector('.akcija_description')?.innerText.trim() || '',
+                discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span, .price_block_rounded_red_wrapper span'))
+                                    .map(s => s.innerText.trim())
+                                    .filter(Boolean)
+                                    .join(''),
+                productBrand: null,
+                discountDescription: null
+        }})
     );
 }
 

@@ -55,10 +55,33 @@ async function getProductInfo(page) {
             const rawPrice = node.querySelector('.ods-price__value')?.innerText.trim() || '';
             const rawOldPrice = node.querySelector('.ods-price__stroke-price s')?.innerText.trim() || '';
 
+            const rawDates = node.querySelector('.ods-badge__label')?.innerText.trim() || null;
+            let validFrom = null;
+            let validUntil = null;
+
+            if (rawDates) {
+                const rangeMatch = rawDates.match(/(\d{2}) (\d{2})\s*-\s*(\d{2}) (\d{2})/);
+                if (rangeMatch) {
+                    const [ , startMonth, startDay, endMonth, endDay] = rangeMatch;
+                    const year = new Date().getFullYear();
+                    validFrom = `${year}-${startMonth}-${startDay}`;
+                    validUntil = `${year}-${endMonth}-${endDay}`;
+                } else {
+                    const startMatch = rawDates.match(/(?:Nuo)?\s*(\d{2}) (\d{2})/i);
+                    if (startMatch) {
+                        const [ , month, day] = startMatch;
+                        const year = new Date().getFullYear();
+                        validFrom = `${year}-${month}-${day}`;
+                        validUntil = null;
+                    }
+                }
+            }
+
             return {
                 store: "Lidl",
                 title: node.querySelector('.product-grid-box__title')?.innerText.trim() || '',
-                validUntil: node.querySelector('.ods-badge__label')?.innerText.trim() || null,
+                validFrom,
+                validUntil,
                 image: node.querySelector('.odsc-image-gallery__image')?.src || '',
                 price: parsePrice(rawPrice),
                 oldPrice: parsePrice(rawOldPrice),
