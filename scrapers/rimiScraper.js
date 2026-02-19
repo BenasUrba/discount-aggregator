@@ -1,5 +1,7 @@
 const { chromium } = require("playwright");
 const fs = require('fs');
+const { insertProducts } = require('../backend/db/products');
+const pool = require('../backend/db/index');
 
 async function paginationLoader(page) {
     let allProducts = [];
@@ -93,8 +95,16 @@ function exportToCSV(products, filename='rimiProducts.csv') {
     console.log(`CSV saved as ${filename}`);
 }
 
+async function saveProducts(products, store) {
+    await pool.query('DELETE FROM products WHERE store = $1', [store])
+
+    for (const product of products) {
+        await insertProducts(product);
+    }
+}
+
 async function main() {
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
     try {
@@ -103,6 +113,8 @@ async function main() {
         );
 
         const products = await paginationLoader(page);
+
+        await saveProducts(products, 'Rimi');
         exportToCSV(products);
 
         console.log(`Product Count: ${products.length}`);

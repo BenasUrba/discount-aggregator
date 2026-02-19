@@ -1,5 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
+const { insertProducts } = require('../backend/db/products');
+const pool = require('../backend/db/index');
 
 async function getDiscountPageLink(page) {
     await page.goto(
@@ -116,6 +118,13 @@ function exportToCSV(products, filename='lidlProducts.csv') {
     console.log(`CSV saved as ${filename}`);
 }
 
+async function saveProducts(products, store) {
+    await pool.query('DELETE FROM products WHERE store = $1', [store])
+
+    for (const product of products) {
+        await insertProducts(product);
+    }
+}
 
 async function main() {
     const browser = await chromium.launch({ headless: true });
@@ -127,6 +136,8 @@ async function main() {
 
         await lazyLoadingScroller(page);
         const products = await getProductInfo(page);
+
+        await saveProducts(products, 'Lidl');
 
         exportToCSV(products);
 
