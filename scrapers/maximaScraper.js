@@ -1,5 +1,4 @@
 const { chromium } = require('playwright');
-const fs = require('fs');
 const { insertProducts } = require('../backend/db/products');
 const pool = require('../backend/db/index');
 
@@ -56,27 +55,6 @@ async function getProducts(page) {
     );
 }
 
-function exportToCSV(products, filename='maximaProducts.csv') {
-    if (!products.length) {
-        console.log('No products to export');
-        return;
-    }
-
-    const headers = Object.keys(products[0]);
-
-    const rows = products.map(p => 
-        headers.map(h => `"${(p[h] ?? '').toString().replace(/"/g, '""')}"`).join(',')
-    );
-
-    const csv = [
-        headers.join(','),
-        ...rows
-    ].join('\n');
-
-    fs.writeFileSync(filename, csv, 'utf8');
-    console.log(`CSV saved as ${filename}`);
-}
-
 async function saveProducts(products, store) {
     await pool.query('DELETE FROM products WHERE store = $1', [store])
 
@@ -100,8 +78,6 @@ async function main() {
         const products = await getProducts(page);
 
         await saveProducts(products, 'Maxima');
-
-        exportToCSV(products);
 
         console.log(`Product count: ${products.length}`);
         return products;
