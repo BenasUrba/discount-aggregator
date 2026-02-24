@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { insertProducts } = require('../backend/db/products');
-const pool = require('../backend/db/index');
+const { pool } = require('../backend/db/index');
 
 async function getDiscountPageLink(page) {
     await page.goto(
