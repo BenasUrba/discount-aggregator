@@ -1,4 +1,5 @@
 import StoreButtons from "./StoreButtons";
+import SearchBar from "./SearchBar";
 
 export default function Hero({ stores, onSelectStore }) {
 
@@ -10,6 +11,8 @@ export default function Hero({ stores, onSelectStore }) {
             <p className="text-gray-600 text-xl mb-8">
                 Compare prices and find the best deals — save time and money!
             </p>
+
+            <SearchBar/>
 
             <StoreButtons
                 stores={stores}
