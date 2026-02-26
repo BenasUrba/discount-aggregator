@@ -1,10 +1,9 @@
-import './index.css';
-import Home from "./pages/home";
+import Hero from "./components/Hero";
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-100">
-      <Home/>
+      <Hero/>
     </div>
   )
 }
