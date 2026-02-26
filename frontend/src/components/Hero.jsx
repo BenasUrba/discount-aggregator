@@ -1,4 +1,7 @@
-export default function Hero() {
+import StoreButtons from "./StoreButtons";
+
+export default function Hero({ stores, onSelectStore }) {
+
     return (
         <header className="max-w-6xl mx-auto px-6 py-16 text-center">
             <h1 className="text-5xl font-extrabold text-gray-900 mb-4">
@@ -7,6 +10,11 @@ export default function Hero() {
             <p className="text-gray-600 text-xl mb-8">
                 Compare prices and find the best deals — save time and money!
             </p>
+
+            <StoreButtons
+                stores={stores}
+                onSelectStore={onSelectStore}
+            />
         </header>
     );
 }
