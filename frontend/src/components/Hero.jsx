@@ -1,7 +1,7 @@
 import StoreButtons from "./StoreButtons";
 import SearchBar from "./SearchBar";
 
-export default function Hero({ stores, onSelectStore }) {
+export default function Hero({ stores, selectedStore, onSelectStore }) {
 
     return (
         <header className="max-w-6xl mx-auto px-6 py-16 text-center">
@@ -16,6 +16,7 @@ export default function Hero({ stores, onSelectStore }) {
 
             <StoreButtons
                 stores={stores}
+                selectedStore={selectedStore}
                 onSelectStore={onSelectStore}
             />
         </header>
