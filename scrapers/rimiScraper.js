@@ -60,7 +60,7 @@ async function getProducts(page) {
                 title: node.querySelector('.card__name')?.innerText.trim() || '',
                 validFrom: null,
                 validUntil: null,
-                image: node.querySelector('.card__image-wrapper img')?.src || '',
+                image: node.querySelector('.card__image-wrapper img[data-src]')?.dataset.src || '',
                 price,
                 oldPrice,
                 loyaltyRequired: !!node.querySelector('.price-label img')?.src,
