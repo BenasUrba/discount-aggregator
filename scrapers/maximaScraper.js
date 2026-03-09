@@ -43,7 +43,7 @@ async function getProducts(page) {
                     const discount = node.querySelector('.offer-price-tag__discount-value')?.innerText.trim() || '';
                     const discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
                     const discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
-                    return discount || discount_percentage || discount_wrapper || '';
+                    return `${discount}%` || discount_percentage || discount_wrapper || '';
                 })(),
                 productBrand: null,
                 discountDescription: null
