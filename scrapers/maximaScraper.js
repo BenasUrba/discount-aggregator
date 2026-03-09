@@ -35,23 +35,10 @@ async function getProducts(page) {
                     const cents = node.querySelector('.offer-price-tag__price-fraction')?.innerText.trim() || '';
                     return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
                 })(),
-                // oldPrice: (() => {
-                //     const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
-                //     const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
-                //     const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
-                //     return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
-                // })(),
                 oldPrice: Number(node.querySelector('.offer-price-tag__old-price')?.innerText.trim().replace(/[^\d,.-]/g, '').replace(',','.')) || null,
                 loyaltyRequired: !!node.querySelector('.offer-price-tag__icon img')?.src,
-                // storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
                 storeSize: node.querySelectorAll('.offer-price-tag__meta-icon img').length,
-                // description: node.querySelector('.row .col-12')?.innerText.trim() || '',
                 description: node.querySelector('.offer-price-tag__meta-comparison')?.innerText.trim() || '',
-                // discountInfo: (() => {
-                //     const discount = node.querySelector('.discount')?.innerText.trim() || '';
-                //     const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
-                //     return discount && percentage ? `${discount}${percentage}` : discount;
-                // })(),
                 discountInfo: (() => {
                     discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
                     discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
