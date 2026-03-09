@@ -5,7 +5,7 @@ const { pool } = require('../backend/db/index');
 async function getProducts(page) {
     return await page.$$eval('[data-controller="offerCard"]', nodes => 
         nodes.map(node => {
-            const rawDates = node.querySelector('.text-small span')?.innerText.trim() || '';
+            const rawDates = node.querySelector('.offer-price-tag__meta-date')?.innerText.trim() || '';
             let validFrom = null;
             let validUntil = null;
 
@@ -31,23 +31,31 @@ async function getProducts(page) {
                 validUntil,
                 image: node.querySelector('.offer-image img')?.src || '',
                 price: (() => {
-                    const whole = node.querySelector('div.bg-primary .price-eur')?.innerText.trim() || '';
-                    const cents = node.querySelector('div.bg-primary .price-cents')?.innerText.trim() || '';
+                    const whole = node.querySelector('.offer-price-tag__price-integer')?.innerText.trim() || '';
+                    const cents = node.querySelector('.offer-price-tag__price-fraction')?.innerText.trim() || '';
                     return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
                 })(),
-                oldPrice: (() => {
-                    const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
-                    const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
-                    const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
-                    return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
-                })(),
-                loyaltyRequired: !!node.querySelector('.icon-wrapper img')?.src,
-                storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
-                description: node.querySelector('.row .col-12')?.innerText.trim() || '',
+                // oldPrice: (() => {
+                //     const whole = node.querySelector('div.bg-white .price-eur')?.innerText.trim() || '';
+                //     const cents = node.querySelector('div.bg-white .price-cents')?.innerText.trim() || '';
+                //     const crossedPrice = node.querySelector('.price-old')?.innerText.trim() || '';
+                //     return whole && cents ? Number(`${whole}.${cents}`) : (crossedPrice ? Number(crossedPrice.replace(/[^\d,.-]/g, '').replace(',', '.')) : null);
+                // })(),
+                oldPrice: Number(node.querySelector('.offer-price-tag__old-price')?.innerText.trim().replace(/[^\d,.-]/g, '').replace(',','.')) || null,
+                loyaltyRequired: !!node.querySelector('.offer-price-tag__icon img')?.src,
+                // storeSize: node.querySelectorAll('.d-inline-block img.x-icon').length,
+                storeSize: node.querySelectorAll('.offer-price-tag__meta-icon img').length,
+                // description: node.querySelector('.row .col-12')?.innerText.trim() || '',
+                description: node.querySelector('.offer-price-tag__meta-comparison')?.innerText.trim() || '',
+                // discountInfo: (() => {
+                //     const discount = node.querySelector('.discount')?.innerText.trim() || '';
+                //     const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
+                //     return discount && percentage ? `${discount}${percentage}` : discount;
+                // })(),
                 discountInfo: (() => {
-                    const discount = node.querySelector('.discount')?.innerText.trim() || '';
-                    const percentage = node.querySelector('.percentage-symbol')?.innerText.trim() || '';
-                    return discount && percentage ? `${discount}${percentage}` : discount;
+                    discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
+                    discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
+                    return discount_percentage ? discount_percentage : discount_wrapper;
                 })(),
                 productBrand: null,
                 discountDescription: null
