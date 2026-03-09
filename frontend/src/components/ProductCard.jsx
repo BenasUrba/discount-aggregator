@@ -3,6 +3,9 @@ export default function ProductCard({ product }) {
         <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full">
             <img src={product.image} alt={product.title} className="h-40 object-contain mb-2"/>
             <h2 className="font-semibold text-md">{product.title}</h2>
+            <h3 className="font-small text-sm text-gray-700">
+                {product.discount_description ? product.discount_description : product.description}
+            </h3>
             <div className="flex items-baseline gap-2">
                 {product.price && (
                     <p className="font-bold text-xl text-red-600">
