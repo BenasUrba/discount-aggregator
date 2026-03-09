@@ -40,9 +40,10 @@ async function getProducts(page) {
                 storeSize: node.querySelectorAll('.offer-price-tag__meta-icon img').length,
                 description: node.querySelector('.offer-price-tag__meta-comparison')?.innerText.trim() || '',
                 discountInfo: (() => {
-                    discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
-                    discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
-                    return discount_percentage ? discount_percentage : discount_wrapper;
+                    const discount = node.querySelector('.offer-price-tag__discount-value')?.innerText.trim() || '';
+                    const discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
+                    const discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
+                    return discount || discount_percentage || discount_wrapper || '';
                 })(),
                 productBrand: null,
                 discountDescription: null
