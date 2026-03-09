@@ -1,7 +1,12 @@
 export default function ProductCard({ product }) {
     return(
         <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full">
-            <img src={product.image} alt={product.title} className="h-40 object-contain mb-2"/>
+            <div className="relative h-40 w-full flex justify-center items-start">
+                <img src={product.image} alt={product.title} className="max-h-full object-contain"/>
+                {product.discount_info && (
+                    <p className="absolute top-1 right-1 bg-red-600 px-2 py-1 rounded text-white text-sm rotate-6 shadow-md">{product.discount_info}</p>
+                )}
+            </div>
             {product.product_brand && (
                 <p className="text-xs text-gray-500 uppercase tracking-wide">{product.product_brand}</p>
             )}
@@ -22,7 +27,7 @@ export default function ProductCard({ product }) {
                     </p>
                 )}
             </div>
-            <p className="text-sm text-gray-500 mt-1">{product.store}</p>
+            <p className="text-sm text-gray-500 mt-auto">{product.store}</p>
         </div>
     );
 }
