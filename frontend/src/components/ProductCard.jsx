@@ -1,4 +1,15 @@
+import { formatDate } from "../utils/formatDate";
+
 export default function ProductCard({ product }) {
+    const dateText = 
+        product.valid_from && product.valid_until ?
+            `${formatDate(product.valid_from)} – ${formatDate(product.valid_until)}` :
+            product.valid_from ?
+            `Nuo ${formatDate(product.valid_from)}`:
+            product.valid_until ?
+            `Iki ${formatDate(product.valid_until)}`:
+            null;
+
     return(
         <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full">
             <div className="relative h-40 w-full flex justify-center items-start">
@@ -27,6 +38,9 @@ export default function ProductCard({ product }) {
                     </p>
                 )}
             </div>
+            {dateText && (
+                <p className="text-xs text-gray-500 mt-1">{dateText}</p>
+            )}
             <p className="text-sm text-gray-500 mt-auto">{product.store}</p>
         </div>
     );
