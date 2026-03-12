@@ -23,7 +23,7 @@ export default function ProductCard({ product }) {
             null;
 
     return(
-        <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full">
+        <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full hover:border-gray-400 hover:shadow-lg transition">
             <div className="relative h-40 w-full flex justify-center items-start">
                 <img src={product.image} alt={product.title} className="max-h-full object-contain"/>
                 {product.discount_info && (
@@ -54,6 +54,12 @@ export default function ProductCard({ product }) {
                 {product.old_price && (
                     <p className="font-medium text-sm text-gray-400 line-through">
                         {product.old_price}€
+                    </p>
+                )}
+
+                {!product.price && !product.old_price && product.discount_info && (
+                    <p className="font-semibold text-lg text-red-600">
+                        {product.discount_info}
                     </p>
                 )}
             </div>
