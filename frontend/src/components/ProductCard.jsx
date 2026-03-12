@@ -1,5 +1,17 @@
 import { formatDate } from "../utils/formatDate";
 
+const loyaltyBadge = {
+    Lidl: { src: "/lidlPlus-icon.png", className: "h-8 w-8"},
+    IKI: { src: "/ikiLoyalty-icon.png", className: "h-6 w-8"},
+    Maxima: { src: "/maximaLoyalty-icon.png", className: "h-6 w-8"},
+    Rimi: { src: "/rimiLoyalty-icon.png", className: "h-7 w-8"}
+}
+
+const storeSizes = {
+    IKI: { src: "/ikiStore.svg", className: "h-4 w-4"},
+    Maxima: { src: "/maximaStore.png", className: "h-3 w-3" }
+}
+
 export default function ProductCard({ product }) {
     const dateText = 
         product.valid_from && product.valid_until ?
@@ -9,13 +21,6 @@ export default function ProductCard({ product }) {
             product.valid_until ?
             `Iki ${formatDate(product.valid_until)}`:
             null;
-
-    const loyaltyBadge = {
-        Lidl: { src: "/lidlPlus-icon.png", className: "h-8 w-8"},
-        IKI: { src: "/ikiLoyalty-icon.png", className: "h-6 w-8"},
-        Maxima: { src: "/maximaLoyalty-icon.png", className: "h-6 w-8"},
-        Rimi: { src: "/rimiLoyalty-icon.png", className: "h-7 w-8"}
-    }
 
     return(
         <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full">
@@ -55,7 +60,21 @@ export default function ProductCard({ product }) {
             {dateText && (
                 <p className="text-xs text-gray-500 mt-1">{dateText}</p>
             )}
-            <p className="text-sm text-gray-500 mt-auto">{product.store}</p>
+            <div className="flex flex-row justify-between mt-auto">
+                <p className="text-sm text-gray-500">{product.store}</p>
+                <div className="flex flex-row">
+                    {product.store_size > 0 && 
+                            Array.from({ length: product.store_size }).map((_, index) => (
+                                <img
+                                    key={index}
+                                    src={storeSizes[product.store].src}
+                                    className={storeSizes[product.store].className}
+                                    alt={`${product.store} store size`}
+                                />
+                            ))
+                    }
+                </div>
+            </div>
         </div>
     );
 }
