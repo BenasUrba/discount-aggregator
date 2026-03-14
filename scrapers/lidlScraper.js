@@ -9,9 +9,9 @@ async function getDiscountPageLink(page) {
     );
 
     const discountLink = await page
-      .locator('a.ABaseContentTile__content', {
-        hasText: 'savaitės akcijos'
-        })
+      .locator('a.ABaseContentTile__content')
+      .filter({hasText: 'savaitės akcijos'})
+      .first()
       .getAttribute('href');
 
       if (!discountLink) throw new Error("Discount link was not found");
