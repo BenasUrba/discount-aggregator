@@ -11,24 +11,34 @@ export default function Home() {
     const [selectedStore, setSelectedStore] = useState("All Stores");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                setIsLoading(true)
-                setError(null);
-                const data = await getProducts(selectedStore);
-                setProducts(data);
-            } catch (err) {
-                setError("Failed to load products.");
-                console.error(err);
-            } finally {
-                setIsLoading(false);
+        const timeout = setTimeout(() => {
+            if (search && search.trim().length > 0 && search.trim().length < 3) {
+                return;
             }
-        };
+            const fetchProducts = async () => {
+                try {
+                    setIsLoading(true)
+                    setError(null);
+                    
+                    const data = await getProducts(selectedStore, search);
+                    setProducts(data);
+                } catch (err) {
+                    setError("Failed to load products.");
+                    console.error(err);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
-        fetchProducts();
-    }, [selectedStore]);
+            fetchProducts();
+        }, 300);
+
+        return () => clearTimeout(timeout);
+
+    }, [selectedStore, search]);
     
     return (
         <div className="p-6">
@@ -36,6 +46,8 @@ export default function Home() {
                 stores={stores}
                 selectedStore={selectedStore}
                 onSelectStore={setSelectedStore}
+                search={search}
+                setSearch={setSearch}
             />
 
             {isLoading && <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-8 px-4 sm:px-6 lg:px-24">
