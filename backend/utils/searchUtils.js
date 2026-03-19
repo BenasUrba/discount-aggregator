@@ -10,6 +10,18 @@ const normalizeSearch = (text) => {
         .join('');
 };
 
+const synonyms = {
+    cipsai: ["traskuciai"],
+    vistiena: ["visciuku", "vistienos"],
+    saldainiai: ["saldainiams", "guminukai", "guminukams", "saldainiu"],
+    mesa: ["vistiena", "vistienos", "visciuku", "jautiena", "lasisa", "lasisos", "kiauliena", "kiaulienos", "jautienos", "kiaul.", "antis", "svieziai"]
+};
+
+const expandSearch = (term) => {
+    return [term, ...(synonyms[term] || [])];
+};
+
 module.exports = {
-    normalizeSearch
+    normalizeSearch,
+    expandSearch
 };
