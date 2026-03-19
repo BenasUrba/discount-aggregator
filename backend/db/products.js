@@ -1,11 +1,12 @@
 const { pool } = require('./index');
+const { normalizeSearch } = require('../utils/searchUtils');
 
 async function insertProducts(product) {
     const query = `
         INSERT INTO products
-        (store, title, valid_from, valid_until, image, price, old_price, loyalty_required, store_size, description, discount_info, product_brand, discount_description)
+        (store, title, valid_from, valid_until, image, price, old_price, loyalty_required, store_size, description, discount_info, product_brand, discount_description, title_clean)
         VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *;
         `;
 
@@ -22,7 +23,8 @@ async function insertProducts(product) {
         product.description,
         product.discountInfo,
         product.productBrand,
-        product.discountDescription
+        product.discountDescription,
+        normalizeSearch(product.title || "")
     ];
 
     const { rows } = await pool.query(query, values);
