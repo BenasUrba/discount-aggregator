@@ -1,4 +1,5 @@
 const { pool } = require('../db');
+const { normalizeSearch, expandSearch } = require('../utils/searchUtils');
 
 const getAllProducts = async  (req, res) => {
     const { store, search } = req.query;
@@ -13,8 +14,15 @@ const getAllProducts = async  (req, res) => {
     }
 
     if (search) {
-        params.push(`%${search}%`);
-        conditions.push(`title ILIKE $${params.length}`);
+        const normalizeText = normalizeSearch(search);
+        const terms = expandSearch(normalizeText);
+
+        const searchConditions = terms.map((_, index) => 
+            `title_clean ILIKE $${params.length + index + 1}`
+        );
+
+        conditions.push(`(${searchConditions.join(" OR ")})`);
+        terms.forEach(term => params.push(`%${term}%`));
     }
 
     if (conditions.length > 0) {
