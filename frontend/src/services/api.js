@@ -1,9 +1,17 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const getProducts = async (store, search) => {
+export const getProducts = async (store, search, page, limit) => {
     let url = `${API_URL}/api/products`;
 
     const params = [];
+    
+    if (page) {
+        params.push(`page=${page}`);
+    }
+
+    if (limit) {
+        params.push(`limit=${limit}`);
+    }
 
     if (store && store !== "All Stores") {
         params.push(`store=${store}`);

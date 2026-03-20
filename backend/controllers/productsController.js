@@ -2,9 +2,9 @@ const { pool } = require('../db');
 const { normalizeSearch, expandSearch } = require('../utils/searchUtils');
 
 const getAllProducts = async  (req, res) => {
-    const { store, search } = req.query;
+    const { store, search, page, limit } = req.query;
 
-    let query = 'SELECT * FROM products';
+    let baseQuery = 'FROM products';
     let params = [];
     let conditions = [];
 
@@ -26,12 +26,29 @@ const getAllProducts = async  (req, res) => {
     }
 
     if (conditions.length > 0) {
-        query += ` WHERE ` + conditions.join(' AND ');
+        baseQuery += ` WHERE ` + conditions.join(' AND ');
     }
 
+    const currentPage = Math.max(1, parseInt(page) || 1);
+    const currentLimit = Math.min(80, parseInt(limit) || 80);
+
+    const offset = (currentPage - 1) * currentLimit;
+
+    const dataParams = [...params, currentLimit, offset];
+
+    const countQuery = `SELECT COUNT(*) ${baseQuery}`;
+    const dataQuery = `SELECT * ${baseQuery} LIMIT $${dataParams.length - 1} OFFSET $${dataParams.length}`;
+
     try {
-        const result = await pool.query(query, params);
-        res.json(result.rows);
+        const dataResults = await pool.query(dataQuery, dataParams);
+        const countResults = await pool.query(countQuery, params);
+        const totalProducts = parseInt(countResults.rows[0].count);
+        res.json({
+            products: dataResults.rows,
+            totalProducts: totalProducts,
+            page: currentPage,
+            totalPages: Math.ceil(totalProducts / currentLimit)
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
