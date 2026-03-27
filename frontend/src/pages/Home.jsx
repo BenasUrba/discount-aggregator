@@ -69,7 +69,12 @@ export default function Home() {
                 </div>}
             {error && <div className="mt-6 p-6 text-red-600">{error}</div>}
             
-            <h3>Products Available: {totalProducts}</h3>
+            <div className="mt-6 px-4">
+                <p className="text-sm text-gray-600">
+                    Showing {products.length} of {totalProducts} products
+                </p>
+            </div>
+
             {!isLoading && !error && (
                 <ProductList 
                     products={products}
