@@ -103,7 +103,7 @@ async function main() {
 
     try {
         await page.goto("https://www.rimi.lt/e-parduotuve/lt/akcijos?pageSize=80",
-            {waitUntil: "domcontentloaded", timeout: 60000}
+            {waitUntil: "networkidle", timeout: 60000}
         );
 
         const products = await paginationLoader(page);
