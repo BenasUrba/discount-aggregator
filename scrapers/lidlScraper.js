@@ -86,7 +86,7 @@ async function getProductInfo(page) {
             let discount_percentage = null;
             
             if (discountInfo) {
-                const match = discountInfo.match(/-?d+%/);
+                const match = discountInfo.match(/-?\d+%/);
 
                 if (match) {
                     discount_percentage = Math.abs(parseInt(match[0]));
