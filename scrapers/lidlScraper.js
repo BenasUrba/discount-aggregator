@@ -78,20 +78,39 @@ async function getProductInfo(page) {
                 }
             }
 
+            const price = parsePrice(rawPrice);
+            const oldPrice = parsePrice(rawOldPrice);
+
+            const discountInfo = node.querySelector('.ods-price__box-content-text-el')?.innerText.trim() || '';
+
+            let discount_percentage = null;
+            
+            if (discountInfo) {
+                const match = discountInfo.match(/-?d+%/);
+
+                if (match) {
+                    discount_percentage = Math.abs(parseInt(match[0]));
+                }
+            }
+            if (!discount_percentage && price && oldPrice && oldPrice > price) {
+                discount_percentage = Math.round(((oldPrice - price) / oldPrice) * 100);
+            }
+
             return {
                 store: "Lidl",
                 title: node.querySelector('.product-grid-box__title')?.innerText.trim() || '',
                 validFrom,
                 validUntil,
                 image: node.querySelector('.odsc-image-gallery__image')?.src || '',
-                price: parsePrice(rawPrice),
-                oldPrice: parsePrice(rawOldPrice),
+                price,
+                oldPrice,
                 loyaltyRequired: !!node.querySelector('.ods-price__lidl-plus-icon'),
                 storeSize: null,
                 description: node.querySelector('.ods-price__footer')?.innerText.trim() || '',
-                discountInfo: node.querySelector('.ods-price__box-content-text-el')?.innerText.trim() || '',
+                discountInfo,
                 productBrand: node.querySelector('.product-grid-box__brand')?.innerText.trim() || '',
-                discountDescription: null
+                discountDescription: null,
+                discount_percentage
         }})
     );
 }
