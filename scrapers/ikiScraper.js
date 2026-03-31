@@ -90,31 +90,51 @@ async function getProducts(page) {
                 }
             }
 
+            const price = (() => {
+                const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
+                const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
+                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+            })();
+
+            const oldPrice = (() => {
+                const whole = node.querySelector('.price_old_block > .price_int')?.innerText.trim() || '';
+                const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
+                return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+            })();
+
+            const discountInfo = Array.from(node.querySelectorAll('.price_block_red_wrapper span, .price_block_rounded_red_wrapper span'))
+                                    .map(s => s.innerText.trim())
+                                    .filter(Boolean)
+                                    .join('');
+                                    
+            let discount_percentage = null
+
+            if (discountInfo) {
+                const match = discountInfo.match(/-?\d+%/);
+
+                if (match) {
+                    discount_percentage = Math.abs(parseInt(match[0]));
+                }
+            }
+            if (!discount_percentage && price && oldPrice && oldPrice > price) {
+                discount_percentage = Math.round(((oldPrice - price) / oldPrice) * 100);
+            }
+
             return {
                 store: "IKI",
                 title: node.querySelector('.akcija_title')?.innerText.trim() || '',
                 validFrom,
                 validUntil,
                 image: node.querySelector('.card-img-top')?.src || '',
-                price: (() => {
-                    const whole = node.querySelector('.price_block_wrapper > .price_int')?.innerText.trim() || '';
-                    const cents = node.querySelector('.price_block_wrapper > .price_cents > span')?.innerText.trim() || '';
-                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-                })(),
-                oldPrice: (() => {
-                    const whole = node.querySelector('.price_old_block > .price_int')?.innerText.trim() || '';
-                    const cents = node.querySelector('.price_old_block > .price_cents')?.innerText.trim() || '';
-                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-                })(),
+                price,
+                oldPrice,
                 loyaltyRequired: !!node.querySelector('.card img')?.src,
                 storeSize: node.querySelectorAll('.store-list-item__hearts img').length,
                 description: node.querySelector('.akcija_description')?.innerText.trim() || '',
-                discountInfo: Array.from(node.querySelectorAll('.price_block_red_wrapper span, .price_block_rounded_red_wrapper span'))
-                                    .map(s => s.innerText.trim())
-                                    .filter(Boolean)
-                                    .join(''),
+                discountInfo,
                 productBrand: null,
-                discountDescription: null
+                discountDescription: null,
+                discount_percentage
         }})
     );
 }
