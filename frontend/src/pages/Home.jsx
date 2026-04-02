@@ -72,6 +72,9 @@ export default function Home() {
         }
         fetchTopDiscounts();
     }, [selectedStore]);
+
+    const startProducts = (currentPage - 1) * limit + 1;
+    const endProducts = Math.min(currentPage * limit, totalProducts);
     
     return (
         <div className="p-6">
@@ -97,7 +100,7 @@ export default function Home() {
             
                 <div className="mt-6 px-4">
                     <p className="text-sm text-gray-600">
-                        Showing {products.length} of {totalProducts} products
+                        Showing {startProducts}-{endProducts} of {totalProducts} products
                     </p>
                 </div>
 
