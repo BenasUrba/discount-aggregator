@@ -33,3 +33,28 @@ export const getProducts = async (store, search, page, limit) => {
 
     return response.json();
 };
+
+export const getTopDiscounts = async (store, limit) => {
+    let url = `${API_URL}/api/products/top`;
+    const params = [];
+
+    if (store !== "All Stores") {
+        params.push(`store=${store}`);
+    }
+
+    if (limit) {
+        params.push(`limit=${limit}`);
+    }
+
+    if (params.length > 0) {
+        url += `?${params.join("&")}`;
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch top discount products");
+    }
+
+    return response.json();
+};

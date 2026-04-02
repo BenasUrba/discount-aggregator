@@ -55,6 +55,21 @@ async function getProducts(page) {
                 oldPrice = oldPriceParsed;
             }
 
+            const discountInfo = node.querySelector('.price-label__header span')?.innerText.trim() || '';
+           
+            let discount_percentage = null;
+
+            if (discountInfo) {
+                const match = discountInfo.match(/-?\d+%/);
+
+                if (match) {
+                    discount_percentage = Math.abs(parseInt(match[0]));
+                } 
+            }
+            if (!discount_percentage && price && oldPrice && oldPrice > price) {
+                    discount_percentage = Math.round(((oldPrice - price) / oldPrice) * 100);
+            }
+
             return {
                 store: "Rimi",
                 title: node.querySelector('.card__name')?.innerText.trim() || '',
@@ -66,10 +81,11 @@ async function getProducts(page) {
                 loyaltyRequired: !!node.querySelector('.price-label img')?.src,
                 storeSize: null,
                 description: node.querySelector('.card__price-per')?.innerText.trim() || '',
-                discountInfo: node.querySelector('.price-label__header span')?.innerText.trim() || '',
+                discountInfo,
                 productBrand: null,
-                discountDescription: node.querySelector('.price-per-unit')?.innerText.trim() || ''
-        }})
+                discountDescription: node.querySelector('.price-per-unit')?.innerText.trim() || '',
+                discount_percentage
+            }})
     );
 }
 
@@ -87,7 +103,7 @@ async function main() {
 
     try {
         await page.goto("https://www.rimi.lt/e-parduotuve/lt/akcijos?pageSize=80",
-            {waitUntil: "domcontentloaded", timeout: 60000}
+            {waitUntil: "networkidle", timeout: 60000}
         );
 
         const products = await paginationLoader(page);

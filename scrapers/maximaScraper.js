@@ -24,29 +24,49 @@ async function getProducts(page) {
                 }
             }
 
+            const price = (() => {
+                    const whole = node.querySelector('.offer-price-tag__price-integer')?.innerText.trim() || '';
+                    const cents = node.querySelector('.offer-price-tag__price-fraction')?.innerText.trim() || '';
+                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
+                })();
+            
+            const oldPrice = Number(node.querySelector('.offer-price-tag__old-price')?.innerText.trim().replace(/[^\d,.-]/g, '').replace(',','.')) || null;
+                
+            const discountInfo = (() => {
+                    const discount = node.querySelector('.offer-price-tag__discount-value')?.innerText.trim() || '';
+                    const discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
+                    const discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
+                    return discount ? `${discount}%` : discount_percentage ? discount_percentage : discount_wrapper;
+                })();
+
+            let discount_percentage = null;
+
+            if (discountInfo) {
+                const match = discountInfo.match(/-?\d+%/);
+
+                if (match) {
+                    discount_percentage = Math.abs(parseInt(match[0]));
+                }
+            }
+            if (!discount_percentage && price && oldPrice && oldPrice > price) {
+                discount_percentage = Math.round(((oldPrice - price) / oldPrice ) * 100);
+            }
+
             return {
                 store: "Maxima",
                 title: node.querySelector('.mt-4')?.innerText.trim() || '',
                 validFrom,
                 validUntil,
                 image: node.querySelector('.offer-image img')?.src || '',
-                price: (() => {
-                    const whole = node.querySelector('.offer-price-tag__price-integer')?.innerText.trim() || '';
-                    const cents = node.querySelector('.offer-price-tag__price-fraction')?.innerText.trim() || '';
-                    return whole && cents ? Number(`${whole}.${cents}`) : (whole ? Number(whole): null);
-                })(),
-                oldPrice: Number(node.querySelector('.offer-price-tag__old-price')?.innerText.trim().replace(/[^\d,.-]/g, '').replace(',','.')) || null,
+                price,
+                oldPrice,
                 loyaltyRequired: !!node.querySelector('.offer-price-tag__icon img')?.src,
                 storeSize: node.querySelectorAll('.offer-price-tag__meta-icon img').length,
                 description: node.querySelector('.offer-price-tag__meta-comparison')?.innerText.trim() || '',
-                discountInfo: (() => {
-                    const discount = node.querySelector('.offer-price-tag__discount-value')?.innerText.trim() || '';
-                    const discount_percentage = node.querySelector('.offer-price-tag__bottom-discount')?.innerText.trim() || '';
-                    const discount_wrapper = node.querySelector('.offer-price-tag__benefit')?.innerText.trim() || '';
-                    return discount ? `${discount}%` : discount_percentage ? discount_percentage : discount_wrapper;
-                })(),
+                discountInfo,
                 productBrand: null,
-                discountDescription: null
+                discountDescription: null,
+                discount_percentage
         }})
     );
 }

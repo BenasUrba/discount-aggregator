@@ -54,4 +54,31 @@ const getAllProducts = async  (req, res) => {
     }
 };
 
-module.exports = { getAllProducts };
+const getTopDiscounts = async (req, res) => {
+    const { store, limit } = req.query;
+    const productLimit = Math.min(parseInt(limit) || 100, 200);
+
+    let query = "SELECT * FROM products WHERE discount_percentage IS NOT NULL";
+    const params = [];
+
+    if (store) {
+        params.push(store);
+        query += ` AND store = $${params.length}`;
+    }
+
+    if (productLimit) {
+        params.push(productLimit);
+        query += ` ORDER BY discount_percentage DESC LIMIT $${params.length}`;
+    }
+
+    try {
+        const result = await pool.query(query, params);
+        res.json({
+            products:result.rows
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getAllProducts, getTopDiscounts };
