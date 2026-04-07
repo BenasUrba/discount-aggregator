@@ -16,11 +16,13 @@ export function Pagination({ currentPage, setCurrentPage, totalPages }) {
     return (
         <div className="flex flex-row mt-20 justify-center gap-3">
             <button
-                className="p-3 text-lg rounded-lg font-medium shadow font-sans hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-lg rounded-lg font-medium shadow font-sans hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
             >
-                &lt;
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
             </button>
 
             {startPage > 1 && (
@@ -58,11 +60,13 @@ export function Pagination({ currentPage, setCurrentPage, totalPages }) {
             )}
 
             <button
-                className="p-3 text-lg rounded-lg font-medium shadow font-sans hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 text-lg rounded-lg font-medium shadow font-sans hover:bg-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
                 disabled={currentPage === totalPages}
             >
-                &gt;
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
             </button>
         </div>
     );

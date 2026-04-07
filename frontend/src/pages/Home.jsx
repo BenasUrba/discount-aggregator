@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getProducts, getTopDiscounts } from "../services/api";
 import Hero from "../components/Hero";
 import ProductList from "../components/ProductList";
@@ -22,6 +22,7 @@ export default function Home() {
     const [topDiscounts, setTopDiscounts] = useState([]);
     const [carouselError, setCarouselError] = useState(null);
     const [carouselLoading, setCarouselLoading] = useState(true);
+    const productsRef = useRef(null);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -75,6 +76,16 @@ export default function Home() {
 
     const startProducts = (currentPage - 1) * limit + 1;
     const endProducts = Math.min(currentPage * limit, totalProducts);
+
+    useEffect(() => {
+        if (!productsRef.current) return;
+
+        const yOffset = -24;
+        const y = productsRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({ top: y, behavior: "smooth" });
+    }, [currentPage]);
+
     
     return (
         <div className="p-6">
@@ -84,6 +95,7 @@ export default function Home() {
                 onSelectStore={setSelectedStore}
                 search={search}
                 setSearch={setSearch}
+                productsRef={productsRef}
             />
 
             {currentPage === 1 && search.trim() === "" && carouselError === null && carouselLoading === false && (<Carousel

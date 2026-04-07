@@ -1,4 +1,5 @@
 import { formatDate } from "../utils/formatDate";
+import { useEffect, useState } from "react";
 
 const loyaltyBadge = {
     Lidl: { src: "/lidlPlus-icon.png", className: "h-8 w-8"},
@@ -13,6 +14,12 @@ const storeSizes = {
 }
 
 export default function ProductCard({ product }) {
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        setReady(true);
+    }, []);
+
     const dateText = 
         product.valid_from && product.valid_until ?
             `${formatDate(product.valid_from)} – ${formatDate(product.valid_until)}` :
@@ -23,7 +30,7 @@ export default function ProductCard({ product }) {
             null;
 
     return(
-        <div className="bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full hover:border-gray-400 hover:shadow-lg transition">
+        <div className={`bg-white border rounded-lg p-4 shadow-sm w-full flex flex-col h-full hover:border-gray-400 hover:shadow-lg transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}>
             <div className="relative h-40 w-full flex justify-center items-start">
                 <img src={product.image} alt={product.title} className="max-h-full object-contain"/>
                 {product.discount_info && (
