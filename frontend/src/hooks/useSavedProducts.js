@@ -1,16 +1,13 @@
 import { useEffect, useState} from "react";
 
 export default function useSavedProducts() {
-    const [userProducts, setUserProducts] = useState([]);
-
-    useEffect(() => {
+    const [userProducts, setUserProducts] = useState(() => {
         try {
-            const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
-            setUserProducts(savedProducts);
+            return JSON.parse(localStorage.getItem("products") || []);
         } catch {
-            setUserProducts([]);
+            return []
         }
-    }, []);
+    });
 
     useEffect(() => {
         localStorage.setItem("products", JSON.stringify(userProducts));
