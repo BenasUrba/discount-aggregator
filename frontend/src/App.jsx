@@ -1,11 +1,14 @@
 import Home from "./pages/Home";
+import { SavedProductsProvider } from "./context/SavedProductsContext";
 
 function App() {
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Home/>
-    </div>
+    <SavedProductsProvider>
+        <div className="min-h-screen bg-gray-100">
+          <Home/>
+        </div>
+    </SavedProductsProvider>
   )
 }
 
