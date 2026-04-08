@@ -5,6 +5,8 @@ import ProductList from "../components/ProductList";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import { Pagination } from "../components/Pagination";
 import Carousel from "../components/Carousel";
+import ShoppingPanel from "../components/ShoppingPanel";
+import { useSavedProductsContext } from "../context/SavedProductsContext";
 
 const stores = ["All Stores", "Lidl", "IKI", "Maxima", "Rimi"];
 
@@ -23,6 +25,8 @@ export default function Home() {
     const [carouselError, setCarouselError] = useState(null);
     const [carouselLoading, setCarouselLoading] = useState(true);
     const productsRef = useRef(null);
+    const { userProducts } = useSavedProductsContext();
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -86,7 +90,6 @@ export default function Home() {
         window.scrollTo({ top: y, behavior: "smooth" });
     }, [currentPage]);
 
-    
     return (
         <div className="p-6">
             <Hero
@@ -96,6 +99,25 @@ export default function Home() {
                 search={search}
                 setSearch={setSearch}
                 productsRef={productsRef}
+            />
+
+            <button 
+                className={`fixed top-1/4 bg-white text-gray p-3 h-20 border z-30 transition-all duration-300 ease-in-out ${isOpen ? "right-80" : "right-0"} rounded-sm`}
+                onClick={() => setIsOpen(!isOpen)}>
+                {isOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+                )}
+            </button>
+
+            <ShoppingPanel
+                userProducts={userProducts}
+                isOpen={isOpen}
             />
 
             {currentPage === 1 && search.trim() === "" && carouselError === null && carouselLoading === false && (<Carousel
