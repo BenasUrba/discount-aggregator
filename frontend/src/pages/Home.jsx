@@ -102,6 +102,7 @@ export default function Home() {
                 key={selectedStore}
                 products={topDiscounts}
             />)}
+            
 
             {isLoading && <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-8 px-4 sm:px-6 lg:px-24">
                     {Array.from({ length: 10 }).map((_, i) => (
