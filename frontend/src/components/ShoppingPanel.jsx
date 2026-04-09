@@ -1,4 +1,4 @@
-export default function ShoppingPanel({ userProducts, isOpen, removeProduct }) {
+export default function ShoppingPanel({ userProducts, isOpen, removeProduct, clearProducts }) {
     return (
         <div className={`fixed top-0 right-0 h-full flex flex-col p-4 w-80 z-20 bg-white shadow-lg transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 <div className="font-bold p-2 mb-2 text-gray-900 flex justify-between items-center">
@@ -7,7 +7,6 @@ export default function ShoppingPanel({ userProducts, isOpen, removeProduct }) {
                         <span className="text-sm text-gray-600">{userProducts.length} item{userProducts.length > 1 ? "s" : ""}</span>
                     )}
                 </div>
-                
                 <div className="overflow-y-auto flex-1 p-2">
                     {userProducts.length > 0 ? (
                         userProducts.map((product) => (
@@ -22,7 +21,7 @@ export default function ShoppingPanel({ userProducts, isOpen, removeProduct }) {
                                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
                                     title="Remove item"
                                 >
-                                     <svg 
+                                    <svg 
                                         viewBox="0 0 24 24" 
                                         fill="none"
                                         className="w-5 h-5"
@@ -44,6 +43,11 @@ export default function ShoppingPanel({ userProducts, isOpen, removeProduct }) {
                         </div>
                     )}
                 </div>
+                {userProducts.length > 0 && (
+                    <button className="p-3 bg-red-500 hover:bg-red-600 text-white rounded transition-colors" onClick={clearProducts}>
+                        Clear List
+                    </button>
+                )}
         </div>
     )
 }
