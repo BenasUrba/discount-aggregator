@@ -25,7 +25,7 @@ export default function Home() {
     const [carouselError, setCarouselError] = useState(null);
     const [carouselLoading, setCarouselLoading] = useState(true);
     const productsRef = useRef(null);
-    const { userProducts } = useSavedProductsContext();
+    const { userProducts, removeProduct } = useSavedProductsContext();
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -136,6 +136,7 @@ export default function Home() {
             <ShoppingPanel
                 userProducts={userProducts}
                 isOpen={isOpen}
+                removeProduct={removeProduct}
             />
 
             {currentPage === 1 && search.trim() === "" && carouselError === null && carouselLoading === false && (<Carousel
