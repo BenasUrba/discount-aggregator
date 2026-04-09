@@ -102,7 +102,7 @@ export default function Home() {
             />
 
             <button 
-                className={`fixed top-1/4 bg-white text-gray p-3 h-20 border z-30 transition-all duration-300 ease-in-out ${isOpen ? "right-80" : "right-0"} rounded-sm`}
+                className={`fixed top-1/4 bg-white text-gray p-3 h-20 border z-30 transition-all duration-300 ease-in-out ${isOpen ? "right-80" : "right-0"} rounded-l-xl`}
                 onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
