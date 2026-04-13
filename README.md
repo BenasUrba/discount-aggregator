@@ -78,14 +78,19 @@ VITE_API_URL=http://localhost:5000
 ### Home Page
 ![Home](./screenshots/image.png)
 
+### Carousel
 ![Carousel](./screenshots/image-1.png)
 
+### Search Functionality
 ![Search](./screenshots/image-3.png)
 
+### Pagination
 ![Pagination](./screenshots/image-5.png)
 
+### Adding Products to Favourites
 ![Adding products to favourites](./screenshots/image-6.png)
 
+### Shopping List Panel
 ![Shopping list panel](./screenshots/image-7.png)
 
 
