@@ -15,15 +15,15 @@ export default function useSavedProducts() {
 
     const addProduct = (product) => {
         setUserProducts(prev => prev.some(p => p.id === product.id) ? prev : [...prev, product]);
-        console.log(`Product ID ${product.id} has been added`)
     };
 
     const removeProduct = (id) => {
         setUserProducts(prev => prev.filter(p => p.id !== id));
-        console.log(`Product ID ${id} has been removed.`)
     };
 
     const isProductSaved = (id) => userProducts.some(p => p.id === id);
 
-    return { userProducts, addProduct, removeProduct, isProductSaved };
+    const clearProducts = () => setUserProducts([]);
+
+    return { userProducts, addProduct, removeProduct, isProductSaved, clearProducts };
 };
