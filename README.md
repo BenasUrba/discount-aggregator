@@ -1,5 +1,7 @@
 # Lithuanian Grocery Store Discount Aggregator App
 
+![Adding products to favourites](./screenshots/image-6.png)
+
 A web application that aggregates and displays discounted deals from major grocery stores in Lithuania, helping users find the most optimal deals and compare across different stores.
 
 ## Features
